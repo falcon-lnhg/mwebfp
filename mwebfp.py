@@ -15,6 +15,7 @@ import csv
 import requests
 import subprocess
 import nmap
+
 try:
   nm = nmap.PortScanner()
 except nmap.PortScannerError:
@@ -26,7 +27,7 @@ except:
 
 _CIDR_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}/\d{1,2}$')
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
-errorstring = 'usage: mwebfp.py [-h] [-d] [-v] [-i INPUT_RANGE] [-f INPUT_FILE]\n                  [-o OUTPUT_DIR] [-t {XLS,CSV,XML}] [-r]\nmwebfp.py: error:'
+errorstring = 'usage: mwebfp.py [-h] [-v] [-i INPUT_RANGE] [-f INPUT_FILE]\n                  [-o OUTPUT_DIR] [-t {XLS,CSV,XML}] [-r]\nmwebfp.py: error:'
 recovering = False
 httpports = []
 httpsports = []
@@ -47,7 +48,7 @@ def arguments():
   parser.add_argument('-v','--vhosts', choices=['yes', 'no'], help='choice of processing vhosts for each IP address (Default: no)')
   parser.add_argument('-w','--web-screenshots', choices=['yes', 'no'], help='choice of taking web schreenshots (Default: no)')
   args = parser.parse_args()
-  debug = args.debug
+  debug = 0
   if not args.input_file and not args.input_range and not args.server_name and not args.recover:
     print errorstring,
     print 'at least one input is required (--input-range or --input-file or --server-name or --recover)' 
@@ -329,12 +330,16 @@ def main():
   for ip in all_ips:
     vhostsip = []
     if args.vhosts == 'yes':
+      print 'IP Address = ' + ip + ' (also checking virtual hosts)'
       vhostsip = vhosts(ip)
+    else:
+      print 'IP Address = ' + ip
+    print '   NMap heavylifting ... (please be patient)'
     nm2 = nmap.PortScanner()
-    nm2.scan(ip,arguments='-sT -sV -P0 -vvv -n -T4 -oN ' + args.output_dir + '/mwebfp-nmap-' + ip + '.txt --script=http-favicon --script=http-headers --script=http-methods --script=http-title -p' + scanports)
+    nm2.scan(ip,arguments='-sT -P0 -vvv -n -T4 -oN ' + args.output_dir + '/mwebfp-nmap-' + ip + '.txt --script=http-favicon --script=http-headers --script=http-methods --script=http-title -p' + scanports)
     for port in scanports_list:
       portstate = nm2[ip]['tcp'][int(port)]['state']
-      if debug: print ip + ':' + port + '\t->\t' + portstate
+      print '   Processing port ' + port + '\t->\t' + portstate
       if portstate == 'open':
         try:
           title = str(nm2[ip]['tcp'][int(port)]['script']['http-title'])
@@ -355,6 +360,7 @@ def main():
           headers = '<No Headers>'
           server = '<No Server>'
         if args.web_screenshots == 'yes':
+          print '      Capturing screenshot ...',
           if port in http_ports:
             try:
               fname = 'mwebfp-capture---http-' + ip + '-NoHostname-p' + port + '.png'
@@ -412,8 +418,10 @@ def main():
               writecsv(csvfile,[ip,port,'open',vhost,title,favicon,methods,headers,server,fname])
             else:
               writecsv(csvfile,[ip,port,'open',vhost,title,favicon,methods,headers,server])
+        print 'Done.'
       else:
         writecsv(csvfile,[ip,port,str(portstate)])
+  print 'Done. Go check your report file !'
 
 if __name__ == "__main__":
     main()

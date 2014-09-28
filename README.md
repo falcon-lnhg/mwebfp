@@ -31,14 +31,13 @@ The basic operation of **mwebfp** consists of the processing of an input (target
 # Thanks to ET, c4an, Th3R3g3nt, ch0ks and ElJeffe311
 # for inspiration, ideas and debugging/beta-testing help.
 
-usage: mwebfp.py [-h] [-d]
+usage: mwebfp.py [-h]
                  [-i INPUT_RANGE | -n SERVER_NAME | -f INPUT_FILE | -r]
                  [-p HTTP_PORTS] [-s HTTPS_PORTS] [-o OUTPUT_DIR]
                  [-t {HTML,XLS,CSV,XML}] [-v {yes,no}] [-w {yes,no}]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           show debugging info
   -i INPUT_RANGE, --input-range INPUT_RANGE
                         input IP CIDR range
   -n SERVER_NAME, --server-name SERVER_NAME
