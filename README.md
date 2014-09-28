@@ -25,62 +25,37 @@ The basic operation of **mwebfp** consists of the processing of an input (target
 
 ## Parameters
 
+```
 usage: mwebfp.py [-h] [-d]
-
                  [-i INPUT_RANGE | -n SERVER_NAME | -f INPUT_FILE | -r]
-
                  [-p HTTP_PORTS] [-s HTTPS_PORTS] [-o OUTPUT_DIR]
-
                  [-t {HTML,XLS,CSV,XML}] [-v {yes,no}] [-w {yes,no}]
 
 LNHG Massive Web Fingerprinter (mwebfp) v.0.1
 
 optional arguments:
-
   -h, --help            show this help message and exit
-
   -d, --debug           show debugging info
-
   -i INPUT_RANGE, --input-range INPUT_RANGE
-
                         input IP CIDR range
-
   -n SERVER_NAME, --server-name SERVER_NAME
-
                         name of server (DNS name)
-
   -f INPUT_FILE, --input-file INPUT_FILE
-
                         input file containing IP addresses and/or IP ranges
-
   -r, --recover         recover/continue previous process
-
   -p HTTP_PORTS, --http-ports HTTP_PORTS
-
                         TCP HTTP ports (Default: 80/tcp)
-
   -s HTTPS_PORTS, --https-ports HTTPS_PORTS
-
                         TCP HTTPS ports (Default: 443/tcp)
-
   -o OUTPUT_DIR, --output-dir OUTPUT_DIR
-
                         working directory
-
   -t {HTML,XLS,CSV,XML}, --output-format {HTML,XLS,CSV,XML}
-
                         output report format (Default: HTML)
-
   -v {yes,no}, --vhosts {yes,no}
-
                         choice of processing vhosts for each IP address
-
                         (Default: no)
-
   -w {yes,no}, --web-screenshots {yes,no}
-
                         choice of taking web schreenshots (Default: no)
-
 
 ## Current State of Development
 
