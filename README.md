@@ -28,7 +28,8 @@ The basic operation of **mwebfp** consists of the processing of an input (target
 # LowNoiseHG Massive Web Fingerprinter
 # by F4Lc0N - LNHG - USA/Colombia
 #
-# Thanks to Efrain Torres (ET), David Llorens (ch4n), Balazs Makany, and Adrian Puente (ch0ks) for inspiration, ideas and debugging/beta-testing help.
+# Thanks to Efrain Torres (ET), David Llorens (ch4n), Balazs Makany, and Adrian Puente (ch0ks)
+# for inspiration, ideas and debugging/beta-testing help.
 
 usage: mwebfp.py [-h] [-d]
                  [-i INPUT_RANGE | -n SERVER_NAME | -f INPUT_FILE | -r]
