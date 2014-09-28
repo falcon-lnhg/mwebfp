@@ -80,15 +80,63 @@ The current version works very well, even though there are still some minor wrin
 
 In order to run **mwebfp** "out-of-the-git", with all options enabled, you will need:
 
-- Python
-- nmap
-- python-nmap
-- cutycapt (You will need a new version to be able to capture HTTPS pages. A walkthrough for this will be available soon here)
+- Python - Programming language (sudo apt-get instal python)
+- nmap - Port Scanner (sudo apt-get install nmap)
+- python-nmap - Python module (apt-get install python-nmap)
+- requests - Python module (apt-get install python-requests)
+- cutycapt - Qt WebKit Capture Utility (You will need the latest version to be able to capture HTTPS pages - do NOT do apt-get !!!)
+             (Read further under **Installation**
 - A graphical interface (GUI) on the \*nix server you are running the script (I assume Linux)
 
 **NOTE: mwebfp** has been developed and tested on Kali, Ubuntu and Debian. I am sure **YOU** can make it work in other platforms of your choice ;)
 
-## Developers
+## Installation
+
+### Install required software with apt-get:
+```
+$ sudo apt-get install -y nmap python python-nmap python-requests git
+```
+
+### Install CutyCapt:
+Do NOT use apt-get for this, or the version provided by your OS. You can check if the version you have works for **mwebfp** by running 'cutycapt --help' and checking if you have a '--insecure' option or not, or if the copyright is 2003-2010 or 2003-2013 (check las line of the help). You need to have '--insecure' or copyright 2003-2013to be able to use cutycapt with **mwebfp**.
+If you need the latest version, uninstall your current version and take the next steps:
+```
+$ cd /opt
+$ sudo apt-get install -y subversion g++ libqt4-webkit libqt4-dev 
+$ sudo svn checkout svn://svn.code.sf.net/p/cutycapt/code/ cutycapt
+$ cd cutycapt/CutyCapt
+```
+Modify the file ./CutyCapt.hpp, and include the following two lines after the '#include <QtWebKit>' on the first line:
+``` 
+#include <QNetworkReply>
+#include <QSslError>
+```
+and:
+```
+$ sudo qmake
+$ sudo make
+$ sudo cp CutyCapt /usr/local/bin/
+```
+You can test for the '--insecure' parameter or the '2003-2013' copyright with:
+```
+$ cutycapt --help
+```
+
+### Install **mwebfp**
+$ cd /opt
+$ sudo git clone https://github.com/falcon-lnhg/mwebfp.git
+$ cd mwebfp
+
+```
+## Running (Example)
+```
+$ ./mwebfp -i 10.0.0.0/8 -o OutputDir -w yes -v no
+```
+You can check the full list of options at any time with:
+```
+$ ./mwebfp -h
+```
+## Developer Team
 
 ### [LowNoiseHG] (http://www.lownoisehg.org):
 
