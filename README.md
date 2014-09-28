@@ -24,7 +24,6 @@ The basic operation of **mwebfp** consists of the processing of an input (target
   - If requested at runtime, **mwebfp** will grab screenshots of all found web pages (Graphical UI under Linux is required)
 
 ## Parameters
-
 ```
 usage: mwebfp.py [-h] [-d]
                  [-i INPUT_RANGE | -n SERVER_NAME | -f INPUT_FILE | -r]
@@ -56,7 +55,7 @@ optional arguments:
                         (Default: no)
   -w {yes,no}, --web-screenshots {yes,no}
                         choice of taking web schreenshots (Default: no)
-
+```
 ## Current State of Development
 
 As most of the R&D done in **LowNoiseHG (LNHG)** this tool was designed and developed only for its usefulness and with no economic funds or time allocated to it. All development has been done on personal time only, and it will continue as interesting featurs come up, and if time is available taking into account other projects.
