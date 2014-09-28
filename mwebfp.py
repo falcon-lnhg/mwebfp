@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #
-# LowNoiseHG Web Fingerprinter v.0.1
+# LowNoiseHG Web Fingerprinter v.1.0
 # by F4Lc0N - LNHG - USA/Colombia
 #
-# Thanks to Efrain Torres (ET), David Llorens (ch4n), Balazs Makany, and Adrian Puente (ch0ks) for inspiration, ideas and debugging/betatesting help.
+# Thanks to ET, ch4n, Th3R3g3nt, ch0ks and ElJeffe311 for inspiration, ideas and debugging/betatesting help.
 
 import argparse
 import socket
@@ -16,7 +16,7 @@ import requests
 import subprocess
 import nmap
 try:
-  nm = nmap.PortScanner()         # instantiate nmap.PortScanner object
+  nm = nmap.PortScanner()
 except nmap.PortScannerError:
   print('Nmap not found', sys.exc_info()[0])
   sys.exit(0)
@@ -33,8 +33,7 @@ httpsports = []
 
 def arguments():
   global args, errorstring, httpports, httpsports, debug
-  #FUTURE: Option to receive nmap scans to be processed
-  parser = argparse.ArgumentParser(description='LNHG Massive Web Fingerprinter (mwebfp) v.0.1')
+  parser = argparse.ArgumentParser(description='LNHG Massive Web Fingerprinter (mwebfp) v.1.0')
   parser.add_argument('-d','--debug', action='store_true', help='show debugging info')
   inputgroup = parser.add_mutually_exclusive_group()
   inputgroup.add_argument('-i','--input-range', help='input IP CIDR range')
@@ -48,14 +47,11 @@ def arguments():
   parser.add_argument('-v','--vhosts', choices=['yes', 'no'], help='choice of processing vhosts for each IP address (Default: no)')
   parser.add_argument('-w','--web-screenshots', choices=['yes', 'no'], help='choice of taking web schreenshots (Default: no)')
   args = parser.parse_args()
-  # ARGUMENT CLEANUP
-  # At least ONE input source
   debug = args.debug
   if not args.input_file and not args.input_range and not args.server_name and not args.recover:
     print errorstring,
     print 'at least one input is required (--input-range or --input-file or --server-name or --recover)' 
     sys.exit(0)
-  # Output dir ?
   if not args.output_dir:
     print errorstring,
     print 'an output directory needs to be specified. Please provide an output directory'
@@ -64,7 +60,6 @@ def arguments():
     valid_chars = "-_() %s%s" % (string.ascii_letters, string.digits)
     newdirname = ''.join(c for c in args.output_dir if c in valid_chars)
     args.output_dir = newdirname
-  # When recovering ...
   if args.recover:
     if args.output_format:
       print errorstring,
@@ -78,12 +73,10 @@ def arguments():
       print errorstring,
       print 'web shcreenshots options cannot be used during recovery'
       sys.exit(0)
-  # Verify web screenshots and vhosts
   if not args.web_screenshots:
     args.web_screenshots = 'no'
   if not args.vhosts:
     args.vhosts = 'no'
-  # Verify server DNS name
   if args.server_name:
     try:
       args.input_range = socket.gethostbyname_ex(args.server_name)[2][0] + '/32'
@@ -91,14 +84,11 @@ def arguments():
       print errorstring,
       print 'invalid or unresolvable DNS server name: " ' + args.server_name + ' "'
       sys.exit(0)
-  # Default output format
   if not args.output_format:
     args.output_format = 'HTML'
-  # Default/selected HTTP ports
   if not args.http_ports:
     args.http_ports = '80'
   else:
-    # Verify additional ports string
     addports = args.http_ports.split(",")
     finalports = []
     for port in addports:
@@ -124,11 +114,9 @@ def arguments():
         initial = 1
       else:
         args.http_ports = args.http_ports + ',' + port 
-  # Default/selected HTTPS ports
   if not args.https_ports:
     args.https_ports = '443'
   else:
-    # Verify additional ports string
     addports = args.https_ports.split(",")
     finalports = []
     for port in addports:
@@ -154,7 +142,6 @@ def arguments():
         initial = 1
       else:
         args.https_ports = args.https_ports + ',' + port
-  # Check input source validity
   if args.input_range:
     if not validate_cidr(args.input_range) and not validate_ip(args.input_range):
       print errorstring,
@@ -182,10 +169,8 @@ def ip2long(ip):
     return None
   quads = ip.split('.')
   if len(quads) == 1:
-    # only a network quad
     quads = quads + [0, 0, 0]
   elif len(quads) < 4:
-    # partial form, last supplied quad is host address, rest is network
     host = quads[-1:]
     quads = quads[:-1] + [0, ] * (4 - len(quads)) + host
   lngip = 0
@@ -243,9 +228,7 @@ def writecsv(csvfile,row):
 
 def main():
   global args, errorstring, httpports, httpsports, debug, recovering, csvfile
-  # COMMAND-LINE ARGUMENT PROCESSING
   arguments()
-  # TODO: check_dependencies()
   if debug:
     print 'DEBUG: RECEIVED ARGUMENTS AFTER PROCESSING:'
     print '  Debug:',args.debug
@@ -258,15 +241,12 @@ def main():
     print '  HTTPS Ports:',args.https_ports
     print '  VHosts:',args.vhosts
     print '  Web Screenshots:',args.web_screenshots
-  ### PRESTAGE 00 - SETUP
-  # Verify if output dir exists, if not, create it
   if args.recover and not os.path.exists(args.output_dir):
     print errorstring,
     print 'directory for recovery process not found'
     sys.exit(0)
   if os.path.exists(args.output_dir):
     print 'Using existing directory: ',args.output_dir
-    # If in recovery mode, get recovery stage and code 
     if args.recover:
       if not os.path.exists(args.output_dir + '/.status'):
         print errorstring,
@@ -289,7 +269,6 @@ def main():
     os.makedirs(args.output_dir)  
   csvfile = args.output_dir + '/mwebfp-' + args.output_dir + '.csv'
   createcsv(csvfile)
-  # Build CIDR Ranges List
   cidr_ranges = []
   if args.input_file:
     try:
@@ -313,8 +292,6 @@ def main():
        args.input_range = args.input_range + '/32'
     cidr_ranges.append(args.input_range)
   if debug: print 'DEBUG: Initial CIDR ranges list: ',cidr_ranges
-  # PRESTAGING (STAGE "-1")
-  # Build List of All IP Addresses
   if recovering == False:
     all_ips = []
     for iprange in cidr_ranges:
@@ -344,8 +321,6 @@ def main():
   if debug: print 'ips (All IPs) = ',all_ips
   numips = len(all_ips)
   print 'Loaded ' + str(numips) + ' IP addresses to scan' 
-  # STAGE 0
-  # Scan IP addresses one-by-one, on required ports
   scanports = args.http_ports + ',' + args.https_ports
   http_ports = args.http_ports.split(',')
   https_ports = args.https_ports.split(',')
@@ -356,7 +331,7 @@ def main():
     if args.vhosts == 'yes':
       vhostsip = vhosts(ip)
     nm2 = nmap.PortScanner()
-    nm2.scan(ip,arguments='-sT -sV -P0 -vvv -n -T4 -oN ' + args.output_dir + '/WebOnly-nmap-' + ip + '.txt --script=http-favicon --script=http-headers --script=http-methods --script=http-title -p' + scanports)
+    nm2.scan(ip,arguments='-sT -sV -P0 -vvv -n -T4 -oN ' + args.output_dir + '/mwebfp-nmap-' + ip + '.txt --script=http-favicon --script=http-headers --script=http-methods --script=http-title -p' + scanports)
     for port in scanports_list:
       portstate = nm2[ip]['tcp'][int(port)]['state']
       if debug: print ip + ':' + port + '\t->\t' + portstate
@@ -382,14 +357,14 @@ def main():
         if args.web_screenshots == 'yes':
           if port in http_ports:
             try:
-              fname = 'WebOnly-capture---http-' + ip + '-NoHostname-p' + port + '.png'
+              fname = 'mwebfp-capture---http-' + ip + '-NoHostname-p' + port + '.png'
               filename = args.output_dir + '/' + fname
               subprocess.call(['cutycapt','--url=http://' + ip + '/','--out=' + filename,'--out-format=png'])
             except:
               pass
           if port in https_ports:
             try:
-              fname = 'WebOnly-capture---https-' + ip + '-NoHostname-p' + port + '.png'
+              fname = 'mwebfp-capture---https-' + ip + '-NoHostname-p' + port + '.png'
               filename = args.output_dir + '/' + fname
               subprocess.call(['cutycapt','--url=https://' + ip + '/','--out=' + filename,'--out-format=png','--insecure'])
             except:
@@ -400,7 +375,7 @@ def main():
         if args.vhosts == 'yes' and len(vhostsip) > 0:
           for vhost in vhostsip:
             nm3 = nmap.PortScanner()
-            nm3.scan(vhost,arguments='-sT -sV -P0 -vvv -n -T4 -oN ' + args.output_dir + '/WebOnly-nmap-' + ip + '-' + vhost + '-p' + port + '.txt --script=http-favicon --script=http-headers --script=http-methods --script=http-title -p' + port)
+            nm3.scan(vhost,arguments='-sT -sV -P0 -vvv -n -T4 -oN ' + args.output_dir + '/mwebfp-nmap-' + ip + '-' + vhost + '-p' + port + '.txt --script=http-favicon --script=http-headers --script=http-methods --script=http-title -p' + port)
             try:
               title = str(nm3[ip]['tcp'][int(port)]['script']['http-title'])
             except:
@@ -422,14 +397,14 @@ def main():
             if args.web_screenshots == 'yes':
               if port in http_ports:
                 try:
-                  fname = 'WebOnly-capture---http-' + ip + '-' + vhost + '-p' + port + '.png' 
+                  fname = 'mwebfp-capture---http-' + ip + '-' + vhost + '-p' + port + '.png' 
                   filename = args.output_dir + '/' + fname
                   subprocess.call(['cutycapt','--url=http://' + vhost + '/','--out=' + filename,'--out-format=png'])
                 except:
                   pass
               if port in https_ports:
                 try:
-                  fname = 'WebOnly-capture---https-' + ip + '-' + vhost + '-p' + port + '.png'
+                  fname = 'mwebfp-capture---https-' + ip + '-' + vhost + '-p' + port + '.png'
                   filename = args.output_dir + '/' + fname
                   subprocess.call(['cutycapt','--url=https://' + vhost + '/','--out=' + filename,'--out-format=png','--insecure'])
                 except:
@@ -439,8 +414,6 @@ def main():
               writecsv(csvfile,[ip,port,'open',vhost,title,favicon,methods,headers,server])
       else:
         writecsv(csvfile,[ip,port,str(portstate)])
-
-
 
 if __name__ == "__main__":
     main()
