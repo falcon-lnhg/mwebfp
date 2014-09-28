@@ -74,7 +74,7 @@ The current version works very well, even though there are still some minor wrin
  
 ## License
 
-**mwebfp** and all its realted code is released under the GPL v3 open-source license. THe full license is attached in the LICENSE.md file.
+**mwebfp** and all its related code is released under the **GPL v3 open-source license**. The full license is attached in the LICENSE.md file.
 
 ## Requirements
 
