@@ -85,7 +85,7 @@ In order to run **mwebfp** "out-of-the-git", with all options enabled, you will 
 
 ## Developers
 
-### [LowNoiseHG] (www.lownoisehg.org)
+### [LowNoiseHG] (http://www.lownoisehg.org):
 
-F4Lc0N - falcon [<at>] lownoisehg.org
+- F4Lc0N - falcon [at] lownoisehg.org
 
