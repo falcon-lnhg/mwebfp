@@ -25,12 +25,15 @@ The basic operation of **mwebfp** consists of the processing of an input (target
 
 ## Parameters
 ```
+# LowNoiseHG Massive Web Fingerprinter
+# by F4Lc0N - LNHG - USA/Colombia
+#
+# Thanks to Efrain Torres (ET), David Llorens (ch4n), Balazs Makany, and Adrian Puente (ch0ks) for inspiration, ideas and debugging/beta-testing help.
+
 usage: mwebfp.py [-h] [-d]
                  [-i INPUT_RANGE | -n SERVER_NAME | -f INPUT_FILE | -r]
                  [-p HTTP_PORTS] [-s HTTPS_PORTS] [-o OUTPUT_DIR]
                  [-t {HTML,XLS,CSV,XML}] [-v {yes,no}] [-w {yes,no}]
-
-LNHG Massive Web Fingerprinter (mwebfp) v.0.1
 
 optional arguments:
   -h, --help            show this help message and exit
